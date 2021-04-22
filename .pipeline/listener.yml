@@ -2,7 +2,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
-  name: trigger-template-secure-kube
+  name: trigger-template-ibp-fabric
 spec:
   params:
     - name: repository
@@ -54,7 +54,7 @@ spec:
     - apiVersion: v1
       kind: PersistentVolumeClaim
       metadata:
-        name: secure-kube-$(uid)-pvc
+        name: ibp-fabric-$(uid)-pvc
       spec:
         resources:
           requests:
@@ -65,10 +65,10 @@ spec:
     - apiVersion: tekton.dev/v1beta1
       kind: PipelineRun
       metadata:
-        name: secure-kube-$(uid)
+        name: ibp-fabric-$(uid)
       spec:
         pipelineRef:
-          name: secure-kube-pipeline
+          name: ibp-fabric-pipeline
         params:
           - name: repository
             value: $(params.repository)
@@ -113,7 +113,7 @@ spec:
         workspaces:
           - name: pipeline-ws
             persistentVolumeClaim:
-              claimName: secure-kube-$(uid)-pvc
+              claimName: ibp-fabric-$(uid)-pvc
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -131,7 +131,7 @@ spec:
     - binding:
         name: trigger-binding-manual
       template:
-        name: trigger-template-secure-kube
+        name: trigger-template-ibp-fabric
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -159,7 +159,7 @@ spec:
     - bindings: 
         - name: github-ent-commit   
       template:
-        name: trigger-template-secure-kube
+        name: trigger-template-ibp-fabric
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -187,7 +187,7 @@ spec:
     - bindings:  
         - name: github-commit   
       template:
-        name: trigger-template-secure-kube
+        name: trigger-template-ibp-fabric
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -215,34 +215,4 @@ spec:
     - bindings:   
         - name: grit-or-gitlab-commit
       template:
-        name: trigger-template-secure-kube
----
-apiVersion: tekton.dev/v1beta1
-kind: TriggerBinding
-metadata:
-  name: bitbucket-commit
-spec:
-  params:
-    - name: repository
-      value: "$(event.repository.links.html.href)"
-    - name: revision
-      value: "$(event.push.changes[0].new.target.hash)"
-    - name: branch
-      value: "$(event.push.changes[0].new.name)"
-    - name: commit-timestamp
-      value: "$(event.pull_request.head.repo.pushed_at)"
-    - name: commit-id
-      value: "$(event.pull_request.head.sha)"
-    - name: scm-type
-      value: "bitbucket"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: bitbucket-commit
-spec:
-  triggers:
-    - binding:
-        name: bitbucket-commit
-      template:
-        name: trigger-template-secure-kube
+        name: trigger-template-ibp-fabric
