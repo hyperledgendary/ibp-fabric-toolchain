@@ -119,35 +119,14 @@ spec:
     #       value: $(tasks.git-clone.results.git-branch)
     #     - name: git-commit
     #       value: $(tasks.git-clone.results.git-commit)
-    - name: build
-      runAfter: [git-clone]
+    - name: pipeline-build-task
       taskRef:
-        name: toolchain-build
-      params:
-        - name: custom-script
-          value: "npm run build"
-        - name: pipeline-debug
-          value: $(params.pipeline-debug)
+        name: build-task
+      runAfter:
+        - pipeline-git-event-content-inspect
       workspaces:
-        - name: output
-          workspace: pipeline-ws
-    - name: unit-tests
-      runAfter: [build]
-      taskRef:
-        name: tester-run-tests
-      params:
-        - name: tests-script
-          value: |
-            if [ -f ./test/run-tests.sh ]; then
-              source ./test/run-tests.sh
-              echo -n $FILE_LOCATIONS > $(results.test-result-file-paths.path)
-              echo -n $TEST_TYPES > $(results.test-types.path)
-            else
-              echo "Test runner script not found: ./test/run-tests.sh"
-            fi
-      workspaces:
-        - name: artifacts
-          workspace: pipeline-ws
+        - name: code
+          workspace:  pipeline-ws 
     # - name: publish-doi-code-tests
     #   runAfter: [unit-tests]
     #   when:

@@ -34,6 +34,24 @@ spec:
         - |
           env | sort
           jq -r '.' /cd-config/toolchain.json
+          if [ -z "$DIRECTORY_NAME" ]; then
+            # Find the "humanish" part of the git source repository that corresponds to the clone directory
+            # REPOSITORY contains the repository url and may end with .git suffix
+            DIRECTORY_NAME=$(basename "${REPOSITORY##*/}" .git)
+          fi
+          cd "$DIRECTORY_NAME"
+          pwd
+          whoami
+          # show the git content
+          echo "Executing 'git show-branch --all'"
+          git show-branch --all
+          echo ""
+          # show the directory content as a tree
+          echo "##############"
+          apt-get install tree
+          echo "Executing 'tree'"
+          tree
+          echo ""
 
 
       volumeMounts:
