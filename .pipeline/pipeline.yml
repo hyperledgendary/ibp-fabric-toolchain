@@ -66,19 +66,9 @@ spec:
           value: '. as $toolchain | ["$(params.repository)"] | if .[0]=="" then $toolchain | .services[] | select(.toolchain_binding.name=="repo") | .dashboard_url else .[0] end'
         - name: pipeline-debug
           value: $(params.pipeline-debug)  
-    - name: pipeline-git-event-content-inspect
-      # runAfter:
-      #   - fetch-from-git
-      taskRef:
-        name: inspect-git-content
-      workspaces:
-        - name: workspace
-          workspace: pipeline-ws
-
-
     - name: git-clone
       taskRef:
-        name: my-git-clone-repo
+        name: git-clone-repo
       params:
         - name: repository
           value: $(tasks.extract-repository-url.results.extracted-value)
@@ -91,6 +81,16 @@ spec:
       workspaces:
         - name: output
           workspace: pipeline-ws
+    - name: pipeline-git-event-content-inspect
+      runAfter:
+        - git-clone
+      taskRef:
+        name: inspect-git-content
+      workspaces:
+        - name: workspace
+          workspace: pipeline-ws
+
+
     # - name: extract-doi-enablement
     #   taskRef:
     #     name: toolchain-extract-value
@@ -125,7 +125,7 @@ spec:
         name: toolchain-build
       params:
         - name: custom-script
-          value: ""
+          value: "npm run build"
         - name: pipeline-debug
           value: $(params.pipeline-debug)
       workspaces:

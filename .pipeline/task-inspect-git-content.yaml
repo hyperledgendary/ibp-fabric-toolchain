@@ -33,7 +33,7 @@ spec:
       args:
         - |
           env | sort
-           jq -r '.' /cd-config/toolchain.json
+          jq -r '.' /cd-config/toolchain.json
 
 
       volumeMounts:
