@@ -1,0 +1,51 @@
+---
+# Build task to build the codebase
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task
+spec:
+  params:
+    - name: package-tar-file
+      default: "package.tgz"
+  workspaces:
+    - name: code
+      mountPath: /artifacts
+  steps:
+    - name: obtain-secrets
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /artifacts
+      command: ["/bin/bash", "-c"]
+      env:
+        - name: PACKAGE
+          value: $(params.package-tar-file}
+      args:
+        - |
+          #!/bin/bash
+          ls -lart
+          tar -xtf $PACKAGE
+
+          mkidr ./ansible-config
+          # Authentication to the IBP Endpoint
+          AUTH_JSON=$( jq -n \
+                      --arg ae "$api_endpoint" \
+                      --arg aa "$api_authtype" \
+                      --arg ak "$api_key" \
+                      --arg as "$api_secret" \
+                      --arg ate "$api_token_endport" \
+                      '{api_endpoint: $ae, api_authtype: $aa, api_key: $ak, api_secret: $as, api_token_endpoint: %ate}' )
+
+          # Organization information
+          # id file or actual id?
+          ORG_JSON=$( jq -n \
+                      --arg op "$org_peer_name" \
+                      --arg oi "$org_admin_identity" \
+                      --arg om "$org_msp_name" \
+                      '{org_peer_name: $op, org_admin_identity: $oi, org_msp_name: $om}' )
+          
+          # fabric cfg
+          # channel_name`
+          # "{{ smart_contract_name }}"
+          # version, sequence, endorsement_policy collections
+
+

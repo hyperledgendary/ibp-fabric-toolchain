@@ -127,6 +127,41 @@ spec:
       workspaces:
         - name: code
           workspace:  pipeline-ws 
+
+    - name: pipeline-test-task
+      taskRef:
+        name: pipeline-build-task
+      runAfter:
+        - pipeline-git-event-content-inspect
+      workspaces:
+        - name: code
+          workspace:  pipeline-ws
+
+    - name: pipeline-package-task
+      taskRef:
+         name: package-chaincode
+      runAfter:
+        - pipeline-test-task
+      params:
+        - name: label
+          value: "demo"
+        - name: type
+          value: "node"
+        - name: dir-to-package
+          value: "."
+      workspaces:
+        - name: code
+          workspace: pipeline-ws
+
+    - name: pipeline-deploy-task
+      taskRef:
+         name: chaincode-deploy
+      runAfter:
+        - pipeline-package-task
+      workspaces:
+        - name: code
+          workspace:  pipeline-ws
+
     # - name: publish-doi-code-tests
     #   runAfter: [unit-tests]
     #   when:

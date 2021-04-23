@@ -3,7 +3,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: build-task
+  name: unit-test-task
 spec:
   # params:
   #   - name: directory-name
@@ -17,7 +17,7 @@ spec:
     - name: code
       mountPath: /artifacts
   steps:
-    - name: build
+    - name: unittest
       image: ibmcom/pipeline-base-image:2.6
       # env:
       #   - name: DIRECTORY_NAME
@@ -31,9 +31,9 @@ spec:
       args:
         - |
           #!/bin/bash
-          set -x
           ls -lart
           export HOME=/root && [ -f /root/.nvm/nvm.sh ] && chmod +x /root/.nvm/nvm.sh && source /root/.nvm/nvm.sh
-          npm run build
+          
+          npm run test
 
 
