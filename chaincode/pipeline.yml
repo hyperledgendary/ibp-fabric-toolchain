@@ -155,7 +155,10 @@ spec:
 
     - name: pipeline-deploy-task
       taskRef:
-         name: chaincode-deploy
+         name: chaincode-install-approve
+      params:
+        - name: package-tar-file
+          value: $(tasks.pipeline-package-task.results.filename-package)
       runAfter:
         - pipeline-package-task
       workspaces:
