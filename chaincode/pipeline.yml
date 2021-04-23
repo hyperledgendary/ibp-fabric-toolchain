@@ -139,7 +139,7 @@ spec:
 
     - name: pipeline-package-task
       taskRef:
-         name: package-chaincode
+         name: chaincode-package
       runAfter:
         - pipeline-test-task
       params:

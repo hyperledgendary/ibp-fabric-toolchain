@@ -4,7 +4,6 @@ kind: Task
 metadata:
   name: inspect-git-content
 spec:
-  params:
   workspaces:
     - name: workspace
       mountPath: /artifacts
