@@ -130,7 +130,7 @@ spec:
 
     - name: pipeline-test-task
       taskRef:
-        name: pipeline-build-task
+        name: build-task
       runAfter:
         - pipeline-git-event-content-inspect
       workspaces:
