@@ -32,6 +32,7 @@ spec:
         - |
           #!/bin/bash
           ls -lart
+          source ~/.bashrc
           npm run build
 
 
