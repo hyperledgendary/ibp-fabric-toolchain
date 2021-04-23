@@ -185,9 +185,31 @@ metadata:
 spec:
   triggers:
     - bindings:  
-        - name: github-commit   
+        - name: github-commit
       template:
         name: trigger-template-ibp-fabric
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-pr
+spec:
+  triggers:
+    - bindings:  
+        - name: github-commit
+      template:
+        name: trigger-template-ibp-fabric
+---
+apiVersion: tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: github-tag
+spec:
+  triggers:
+    - bindings:  
+        - name: github-commit
+      template:
+        name: trigger-template-ibp-fabric        
 ---
 apiVersion: tekton.dev/v1beta1
 kind: TriggerBinding
@@ -205,14 +227,3 @@ spec:
       value: $(event.project.http_url)
     - name: scm-type
       value: "gitlab"
----
-apiVersion: tekton.dev/v1beta1
-kind: EventListener
-metadata:
-  name: grit-or-gitlab-commit
-spec:
-  triggers:
-    - bindings:   
-        - name: grit-or-gitlab-commit
-      template:
-        name: trigger-template-ibp-fabric
