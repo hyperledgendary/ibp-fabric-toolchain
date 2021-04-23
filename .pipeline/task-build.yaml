@@ -31,8 +31,9 @@ spec:
       args:
         - |
           #!/bin/bash
+          set -x
           ls -lart
-          source ~/.bashrc
+          export HOME=/root && [ -f /root/.nvm/nvm.sh ] && chmod +x /root/.nvm/nvm.sh && source /root/.nvm/nvm.sh
           npm run build
 
 
