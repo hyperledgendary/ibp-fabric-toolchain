@@ -5,14 +5,14 @@ kind: Task
 metadata:
   name: build-task
 spec:
-  params:
-    - name: directory-name
-      default: "."
-    - name: custom-sdk-versions
-      default: "{}"
-  results:
-    - name: text
-      description: Human notification text
+  # params:
+  #   - name: directory-name
+  #     default: "."
+  #   - name: custom-sdk-versions
+  #     default: "{}"
+  # results:
+  #   - name: text
+  #     description: Human notification text
   workspaces:
     - name: code
       mountPath: /artifacts
@@ -27,8 +27,11 @@ spec:
       #   - name: CUSTOM_SDK_VERSIONS
       #     value: $(params.custom-sdk-versions)
       workingDir: /artifacts
-      script:
+      command: ["/bin/bash", "-c"]
+      args:
         - |
           #!/bin/bash
-          set -x
+          ls -lart
           npm run build
+
+          
