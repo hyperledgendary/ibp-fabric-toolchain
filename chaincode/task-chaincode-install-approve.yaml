@@ -14,7 +14,7 @@ spec:
   steps:
     - name: install
       image: ibmcom/ibp-ansible:latest
-      workingDir: /artifacts
+      workingDir: /home/ibp-user
       command: ["/bin/bash", "-c"]
       env:
         - name: PACKAGE
@@ -22,8 +22,8 @@ spec:
       args:
         - |
           #!/bin/bash
+          ls -lart /artifacts
           ls -lart
-
           cat > install-approve.yml <<EOF
           ---
           - name: Install and approve chaincode
