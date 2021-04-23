@@ -91,7 +91,7 @@ spec:
           tar -C "$tempdir/pkg" -czf "$label.tgz" metadata.json code.tar.gz
 
           # store the filename
-          echo "$label.tgz" > $(results.filename-package)
+          echo "$label.tgz" > $(results.filename-package.path)
 
           rm -Rf "$tempdir"
 
