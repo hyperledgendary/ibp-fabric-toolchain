@@ -9,6 +9,8 @@ spec:
     - name: label
     - name: type
     - name: dir-to-package
+    - name: pipeline-debug
+      default: "0"
   results:
     - name: filename-package
       description: filename of the package
@@ -25,6 +27,8 @@ spec:
           value: $(params.label)
         - name: type
           value: $(params.type)
+        - name: "DEBUG"
+          value: $(params.pipeline-debug)
       workingDir: /artifacts
       command: ["/bin/bash", "-c"]
       args:
