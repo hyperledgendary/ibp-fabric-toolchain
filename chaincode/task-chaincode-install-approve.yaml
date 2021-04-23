@@ -14,7 +14,7 @@ spec:
   steps:
     - name: install
       image: ibmcom/ibp-ansible:latest
-      workingDir: /playbooks
+      workingDir: /artifacts
       command: ["/bin/bash", "-c"]
       env:
         - name: PACKAGE
@@ -63,5 +63,6 @@ spec:
                   endorsement_policy: "{{ smart_contract_endorsement_policy | default(omit) }}"
                   collections_config: "{{ smart_contract_collections_file | default(omit) }}"
           EOF
-          
+
           cat install-approve.yml
+          ansible --version
