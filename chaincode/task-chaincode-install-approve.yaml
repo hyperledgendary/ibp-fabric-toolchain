@@ -8,6 +8,15 @@ spec:
   params:
     - name: package-tar-file
       default: "package.tgz"
+    - name: auth-vars-file
+      default: "auth-vars.yml"
+    - name: endorsement_policy
+      default: "omit"
+    - name: collections_config
+      default: "omit"      
+    - name: smart-contract-name
+    - name: smart-contract-version
+    - name: smart-contract-sequence
   workspaces:
     - name: code
       mountPath: /artifacts
@@ -19,6 +28,24 @@ spec:
       env:
         - name: PACKAGE
           value: $(params.package-tar-file}
+        - name: AUTH_VARS
+          value: $(params.auth-vars-file)
+        - name: ORG_PEER_NAME
+          value: $(params.org-peer-name)
+        - name: ORG_ADMIN_FILE
+          value: $(params.org-admin-file)
+        - name: ORG_MSP_ID
+          value: $(params.org-msp-id)
+        - name: ENDORSEMENT_POLICY
+          value: $(params.endorsement-policy)
+        - name: COLLECTIONS_CONFIG
+          value: $(params.collections-config)
+        - name: SMART_CONTRACT_NAME
+          value: $(params.smart-contract-name)
+        - name: SMART_CONTRACT_VERSION
+          value: $(params.smart-contract-version)
+        - name: SMART_CONTRACT_SEQUENCE
+          value: $(params.smart-contract-sequence)
       args:
         - |
           #!/bin/bash
@@ -29,8 +56,7 @@ spec:
           - name: Install and approve chaincode
             hosts: localhost
             vars_files:
-              - common-vars.yml
-              - org1-vars.yml
+              - /artifacts/${AUTH_VARS}
             tasks:
               - name: Install the chaincode on the peer
                 ibm.blockchain_platform.installed_chaincode:
@@ -39,10 +65,10 @@ spec:
                   api_key: "{{ api_key }}"
                   api_secret: "{{ api_secret | default(omit) }}"
                   api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
-                  peer: "{{ org1_peer_name }}"
-                  identity: "{{ org1_name }} Admin.json"
-                  msp_id: "{{ org1_msp_id }}"
-                  path: "{{ smart_contract_package }}"
+                  peer: "${ORG_PEER_NAME}"
+                  identity: "/artifacts/${ORG_ADMIN_FILE}"
+                  msp_id: "${ORG_MSP_ID}"
+                  path: "/artifacts/${PACKAGE}"
                 register: result
 
               - name: Approve the chaincode on the channel
@@ -52,17 +78,17 @@ spec:
                   api_key: "{{ api_key }}"
                   api_secret: "{{ api_secret | default(omit) }}"
                   api_token_endpoint: "{{ api_token_endpoint | default(omit) }}"
-                  peer: "{{ org1_peer_name }}"
-                  identity: "{{ org1_name }} Admin.json"
-                  msp_id: "{{ org1_msp_id }}"
-                  channel: "{{ channel_name }}"
-                  name: "{{ smart_contract_name }}"
-                  version: "{{ smart_contract_version }}"
+                  peer: "${ORG_PEER_NAME}"
+                  identity: "/artifacts/${ORG_ADMIN_FILE}"
+                  msp_id: "${ORG_MSP_ID}"
+                  channel: "${CHANNEL_NAME}"
+                  name: "${SMART_CONTRACT_NAME}"
+                  version: "${SMART_CONTRACT_VERSION}"
                   package_id: "{{ result.installed_chaincode.package_id }}"
-                  sequence: "{{ smart_contract_sequence }}"
-                  endorsement_policy: "{{ smart_contract_endorsement_policy | default(omit) }}"
-                  collections_config: "{{ smart_contract_collections_file | default(omit) }}"
+                  sequence: "${SMART_CONTRACT_SEQUENCE}"
+                  endorsement_policy: "${ENDORSEMENT_POLICY}"
+                  collections_config: "${COLLECTIONS_CONFIG}"
           EOF
 
           cat install-approve.yml
-          ansible --version
+          ansible-playbook install-approve.yml

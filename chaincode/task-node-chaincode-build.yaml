@@ -3,29 +3,14 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
-  name: unit-test-task
+  name: build-task
 spec:
-  # params:
-  #   - name: directory-name
-  #     default: "."
-  #   - name: custom-sdk-versions
-  #     default: "{}"
-  # results:
-  #   - name: text
-  #     description: Human notification text
   workspaces:
     - name: code
       mountPath: /artifacts
   steps:
-    - name: unittest
+    - name: build
       image: ibmcom/pipeline-base-image:2.6
-      # env:
-      #   - name: DIRECTORY_NAME
-      #     value: $(params.directory-name)
-      #   - name: WORKSPACE
-      #     value: $(workspaces.code.path)
-      #   - name: CUSTOM_SDK_VERSIONS
-      #     value: $(params.custom-sdk-versions)
       workingDir: /artifacts
       command: ["/bin/bash", "-c"]
       args:
@@ -34,6 +19,7 @@ spec:
           ls -lart
           export HOME=/root && [ -f /root/.nvm/nvm.sh ] && chmod +x /root/.nvm/nvm.sh && source /root/.nvm/nvm.sh
           
+          npm run build
           npm run test
 
 
