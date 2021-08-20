@@ -1,0 +1,69 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: inspect-git-content
+spec:
+  workspaces:
+    - name: workspace
+      mountPath: /artifacts
+  steps:
+    - name: inspect-git-content
+      image: ibmcom/pipeline-base-image:2.6
+      env:
+        # - name: REPOSITORY
+        #   value: $(params.repository)
+        # - name: DIRECTORY_NAME
+        #   value: $(params.directory-name)
+        # - name: GHE
+        #   value: $(params.ghe)
+        - name: PIPELINE_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/pipeline-id']
+        - name: PIPELINE_RUN_ID
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.annotations['devops.cloud.ibm.com/tekton-pipeline']
+        - name: WORKSPACE
+          value: $(workspaces.workspace.path)
+      workingDir: /artifacts
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          env | sort
+          jq -r '.' /cd-config/toolchain.json
+          if [ -z "$DIRECTORY_NAME" ]; then
+            # Find the "humanish" part of the git source repository that corresponds to the clone directory
+            # REPOSITORY contains the repository url and may end with .git suffix
+            DIRECTORY_NAME=$(basename "${REPOSITORY##*/}" .git)
+          fi
+          cd "$DIRECTORY_NAME"
+          pwd
+          whoami
+          # show the git content
+          echo "Executing 'git show-branch --all'"
+          git show-branch --all
+          echo ""
+          # show the directory content as a tree
+          echo "##############"
+          apt-get install tree
+          echo "Executing 'tree'"
+          tree
+          echo ""
+
+
+      volumeMounts:
+        - mountPath: /steps
+          name: steps-volume
+        - mountPath: /cd-config
+          name: cd-config-volume
+  volumes:
+    - name: steps-volume
+      emptyDir: {}
+    - name: cd-config-volume
+      configMap:
+        name: toolchain
+        items:
+          - key: toolchain.json
+            path: toolchain.json

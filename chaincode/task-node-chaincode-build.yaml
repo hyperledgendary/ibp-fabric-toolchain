@@ -1,0 +1,25 @@
+---
+# Build task to build the codebase
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-task
+spec:
+  workspaces:
+    - name: code
+      mountPath: /artifacts
+  steps:
+    - name: build
+      image: ibmcom/pipeline-base-image:2.6
+      workingDir: /artifacts
+      command: ["/bin/bash", "-c"]
+      args:
+        - |
+          #!/bin/bash
+          ls -lart
+          export HOME=/root && [ -f /root/.nvm/nvm.sh ] && chmod +x /root/.nvm/nvm.sh && source /root/.nvm/nvm.sh
+          
+          npm run build
+          npm run test
+
+
